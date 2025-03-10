@@ -288,6 +288,7 @@ export default {
       const sysId = row.sysId || this.ids
       getSys(sysId).then(response => {
         this.form = response.data;
+        this.form.sysLogo = this.form.sysLogo ? process.env.VUE_APP_BASE_API + this.form.sysLogo : null;
         this.open = true;
         this.title = "修改系统信息";
       });
