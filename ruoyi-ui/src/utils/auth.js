@@ -13,3 +13,7 @@ export function setToken(token) {
 export function removeToken() {
   return Cookies.remove(TokenKey)
 }
+
+export function RealPath(){
+  return  process.env.VUE_APP_BASE_API + '/system/user/profile/imgUpload';
+}

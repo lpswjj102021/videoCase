@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.VVideoMapper">
+    
+    <resultMap type="VVideo" id="VVideoResult">
+        <result property="vodId"    column="vod_id"    />
+        <result property="vodName"    column="vod_name"    />
+        <result property="typeId"    column="type_id"    />
+        <result property="typeName"    column="type_name"    />
+        <result property="vodEn"    column="vod_en"    />
+        <result property="vodCreateTime"    column="vod_create_time"    />
+        <result property="vodRemarks"    column="vod_remarks"    />
+        <result property="vodPlayForm"    column="vod_play_form"    />
+        <result property="vodImg"    column="vod_img"    />
+        <result property="vodTimes"    column="vod_times"    />
+        <result property="vodArea"    column="vod_area"    />
+        <result property="vodActor"    column="vod_actor"    />
+        <result property="vodUrl"    column="vod_url"    />
+        <result property="status"    column="status"    />
+    </resultMap>
+
+    <sql id="selectVVideoVo">
+        select vod_id, vod_name, type_id, type_name, vod_en, vod_create_time, vod_remarks, vod_play_form, vod_img, vod_times, vod_area, vod_actor, vod_url, status from v_video
+    </sql>
+
+    <select id="selectVVideoList" parameterType="VVideo" resultMap="VVideoResult">
+        <include refid="selectVVideoVo"/>
+        <where>  
+            <if test="vodName != null  and vodName != ''"> and vod_name like concat('%', #{vodName}, '%')</if>
+            <if test="typeId != null "> and type_id = #{typeId}</if>
+            <if test="vodCreateTime != null "> and vod_create_time = #{vodCreateTime}</if>
+            <if test="vodArea != null  and vodArea != ''"> and vod_area = #{vodArea}</if>
+            <if test="vodActor != null  and vodActor != ''"> and vod_actor = #{vodActor}</if>
+        </where>
+    </select>
+    
+    <select id="selectVVideoByVodId" parameterType="Long" resultMap="VVideoResult">
+        <include refid="selectVVideoVo"/>
+        where vod_id = #{vodId}
+    </select>
+
+    <insert id="insertVVideo" parameterType="VVideo">
+        insert into v_video
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="vodId != null">vod_id,</if>
+            <if test="vodName != null">vod_name,</if>
+            <if test="typeId != null">type_id,</if>
+            <if test="typeName != null">type_name,</if>
+            <if test="vodEn != null">vod_en,</if>
+            <if test="vodCreateTime != null">vod_create_time,</if>
+            <if test="vodRemarks != null">vod_remarks,</if>
+            <if test="vodPlayForm != null">vod_play_form,</if>
+            <if test="vodImg != null">vod_img,</if>
+            <if test="vodTimes != null">vod_times,</if>
+            <if test="vodArea != null">vod_area,</if>
+            <if test="vodActor != null">vod_actor,</if>
+            <if test="vodUrl != null">vod_url,</if>
+            <if test="status != null">status,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="vodId != null">#{vodId},</if>
+            <if test="vodName != null">#{vodName},</if>
+            <if test="typeId != null">#{typeId},</if>
+            <if test="typeName != null">#{typeName},</if>
+            <if test="vodEn != null">#{vodEn},</if>
+            <if test="vodCreateTime != null">#{vodCreateTime},</if>
+            <if test="vodRemarks != null">#{vodRemarks},</if>
+            <if test="vodPlayForm != null">#{vodPlayForm},</if>
+            <if test="vodImg != null">#{vodImg},</if>
+            <if test="vodTimes != null">#{vodTimes},</if>
+            <if test="vodArea != null">#{vodArea},</if>
+            <if test="vodActor != null">#{vodActor},</if>
+            <if test="vodUrl != null">#{vodUrl},</if>
+            <if test="status != null">#{status},</if>
+         </trim>
+    </insert>
+
+    <update id="updateVVideo" parameterType="VVideo">
+        update v_video
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="vodName != null">vod_name = #{vodName},</if>
+            <if test="typeId != null">type_id = #{typeId},</if>
+            <if test="typeName != null">type_name = #{typeName},</if>
+            <if test="vodEn != null">vod_en = #{vodEn},</if>
+            <if test="vodCreateTime != null">vod_create_time = #{vodCreateTime},</if>
+            <if test="vodRemarks != null">vod_remarks = #{vodRemarks},</if>
+            <if test="vodPlayForm != null">vod_play_form = #{vodPlayForm},</if>
+            <if test="vodImg != null">vod_img = #{vodImg},</if>
+            <if test="vodTimes != null">vod_times = #{vodTimes},</if>
+            <if test="vodArea != null">vod_area = #{vodArea},</if>
+            <if test="vodActor != null">vod_actor = #{vodActor},</if>
+            <if test="vodUrl != null">vod_url = #{vodUrl},</if>
+            <if test="status != null">status = #{status},</if>
+        </trim>
+        where vod_id = #{vodId}
+    </update>
+
+    <delete id="deleteVVideoByVodId" parameterType="Long">
+        delete from v_video where vod_id = #{vodId}
+    </delete>
+
+    <delete id="deleteVVideoByVodIds" parameterType="String">
+        delete from v_video where vod_id in 
+        <foreach item="vodId" collection="array" open="(" separator="," close=")">
+            #{vodId}
+        </foreach>
+    </delete>
+</mapper>

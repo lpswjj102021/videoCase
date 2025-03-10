@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.por.mapper.VVipMapper">
+    
+    <resultMap type="VVip" id="VVipResult">
+        <result property="vipId"    column="vip_id"    />
+        <result property="vipTypeId"    column="vip_type_id"    />
+        <result property="personId"    column="person_id"    />
+        <result property="endTime"    column="end_time"    />
+    </resultMap>
+
+    <sql id="selectVVipVo">
+        select vip_id, vip_type_id, person_id, end_time from v_vip
+    </sql>
+
+    <select id="selectVVipList" parameterType="VVip" resultMap="VVipResult">
+        <include refid="selectVVipVo"/>
+        <where>  
+            <if test="vipTypeId != null "> and vip_type_id = #{vipTypeId}</if>
+            <if test="personId != null "> and person_id = #{personId}</if>
+            <if test="endTime != null "> and end_time = #{endTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectVVipByVipId" parameterType="Long" resultMap="VVipResult">
+        <include refid="selectVVipVo"/>
+        where vip_id = #{vipId}
+    </select>
+
+    <insert id="insertVVip" parameterType="VVip" useGeneratedKeys="true" keyProperty="vipId">
+        insert into v_vip
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="vipTypeId != null">vip_type_id,</if>
+            <if test="personId != null">person_id,</if>
+            <if test="endTime != null">end_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="vipTypeId != null">#{vipTypeId},</if>
+            <if test="personId != null">#{personId},</if>
+            <if test="endTime != null">#{endTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateVVip" parameterType="VVip">
+        update v_vip
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="vipTypeId != null">vip_type_id = #{vipTypeId},</if>
+            <if test="personId != null">person_id = #{personId},</if>
+            <if test="endTime != null">end_time = #{endTime},</if>
+        </trim>
+        where vip_id = #{vipId}
+    </update>
+
+    <delete id="deleteVVipByVipId" parameterType="Long">
+        delete from v_vip where vip_id = #{vipId}
+    </delete>
+
+    <delete id="deleteVVipByVipIds" parameterType="String">
+        delete from v_vip where vip_id in 
+        <foreach item="vipId" collection="array" open="(" separator="," close=")">
+            #{vipId}
+        </foreach>
+    </delete>
+</mapper>

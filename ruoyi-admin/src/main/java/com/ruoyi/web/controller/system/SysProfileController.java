@@ -137,4 +137,21 @@ public class SysProfileController extends BaseController
         }
         return error("上传图片异常，请联系管理员");
     }
+
+    /**
+     * 图片文件上传
+     */
+    @Log(title = "用户头像", businessType = BusinessType.UPDATE)
+    @PostMapping("/imgUpload")
+    public AjaxResult imgUpload(@RequestParam("avatarfile") MultipartFile file) throws Exception
+    {
+        if (!file.isEmpty())
+        {
+            String avatar = FileUploadUtils.upload(RuoYiConfig.getAvatarPath(), file, MimeTypeUtils.IMAGE_EXTENSION);
+            AjaxResult ajax = AjaxResult.success();
+            ajax.put("imgUrl", avatar);
+            return ajax;
+        }
+        return error("上传图片异常，请联系管理员");
+    }
 }

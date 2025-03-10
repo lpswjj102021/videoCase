@@ -7,10 +7,10 @@
         <navbar/>
         <tags-view v-if="needTagsView"/>
       </div>
-      <app-main/>
+      <app-main/><!--
       <right-panel>
         <settings/>
-      </right-panel>
+      </right-panel>-->
     </div>
   </div>
 </template>
@@ -21,6 +21,7 @@ import { AppMain, Navbar, Settings, Sidebar, TagsView } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 import { mapState } from 'vuex'
 import variables from '@/assets/styles/variables.scss'
+import {listSys} from "../api/system/sys";
 
 export default {
   name: 'Layout',
@@ -54,9 +55,19 @@ export default {
       return variables;
     }
   },
+  created() {
+    this.getSys()
+  },
   methods: {
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
+    },
+    getSys(){
+      listSys({pageSize: 10, pageNum: 1}).then(res => {
+        if (res.code === 200 && res.rows.length > 0)
+          res.rows[0].sysLogo = res.rows[0].sysLogo ? process.env.VUE_APP_BASE_API + res.rows[0].sysLogo : null;
+          this.$store.dispatch('routCache/addSys', res.rows[0])
+      })
     }
   }
 }

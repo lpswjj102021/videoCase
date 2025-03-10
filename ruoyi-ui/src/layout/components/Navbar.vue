@@ -2,10 +2,10 @@
   <div class="navbar">
     <hamburger id="hamburger-container" :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" />
 
-    <breadcrumb v-if="!topNav" id="breadcrumb-container" class="breadcrumb-container" />
-    <top-nav v-if="topNav" id="topmenu-container" class="topmenu-container" />
+<!--    <breadcrumb v-if="!topNav" id="breadcrumb-container" class="breadcrumb-container" />
+    <top-nav v-if="topNav" id="topmenu-container" class="topmenu-container" />-->
 
-    <div class="right-menu">
+    <div class="right-menu"><!--
       <template v-if="device!=='mobile'">
         <search id="header-search" class="right-menu-item" />
 
@@ -23,20 +23,21 @@
           <size-select id="size-select" class="right-menu-item hover-effect" />
         </el-tooltip>
 
-      </template>
+      </template>-->
 
       <el-dropdown class="avatar-container right-menu-item hover-effect" trigger="click">
         <div class="avatar-wrapper">
-          <img :src="avatar" class="user-avatar">
+          <img :src="avatar" class="user-avatar" style="border-radius: 50%;">
+          <b>超级管理员</b>
           <i class="el-icon-caret-bottom" />
         </div>
         <el-dropdown-menu slot="dropdown">
           <router-link to="/user/profile">
             <el-dropdown-item>个人中心</el-dropdown-item>
-          </router-link>
+          </router-link><!--
           <el-dropdown-item @click.native="setting = true">
             <span>布局设置</span>
-          </el-dropdown-item>
+          </el-dropdown-item>-->
           <el-dropdown-item divided @click.native="logout">
             <span>退出登录</span>
           </el-dropdown-item>
@@ -176,9 +177,9 @@ export default {
       margin-right: 30px;
 
       .avatar-wrapper {
-        margin-top: 5px;
         position: relative;
-
+        display: flex;align-items: center;
+        b{ font-size: 15px; font-weight: normal;padding: 0 10px;}
         .user-avatar {
           cursor: pointer;
           width: 40px;
@@ -190,8 +191,7 @@ export default {
           cursor: pointer;
           position: absolute;
           right: -20px;
-          top: 25px;
-          font-size: 12px;
+          font-size: 16px;
         }
       }
     }

@@ -30,6 +30,7 @@
         <poi.version>4.1.2</poi.version>
         <velocity.version>2.3</velocity.version>
         <jwt.version>0.9.1</jwt.version>
+        <hutool.version>5.8.18</hutool.version>
         <!-- override dependency version -->
         <tomcat.version>9.0.98</tomcat.version>
         <logback.version>1.2.13</logback.version>
@@ -40,6 +41,14 @@
     <!-- 依赖声明 -->
     <dependencyManagement>
         <dependencies>
+            <!-- hutool 的依赖配置-->
+            <dependency>
+                <groupId>cn.hutool</groupId>
+                <artifactId>hutool-bom</artifactId>
+                <version>${hutool.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
 
             <!-- 覆盖SpringFramework的依赖配置-->
             <dependency>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.RefreshInfoMapper">
+    
+    <resultMap type="RefreshInfo" id="RefreshInfoResult">
+        <result property="id"    column="id"    />
+        <result property="refreshType"    column="refresh_type"    />
+        <result property="refreshStatus"    column="refresh_status"    />
+        <result property="refreshTik"    column="refresh_tik"    />
+        <result property="refreshPython"    column="refresh_python"    />
+    </resultMap>
+
+    <sql id="selectRefreshInfoVo">
+        select id, refresh_type, refresh_status, refresh_tik , refresh_python from refresh_info
+    </sql>
+
+    <select id="selectRefreshInfoList" parameterType="RefreshInfo" resultMap="RefreshInfoResult">
+        <include refid="selectRefreshInfoVo"/>
+        <where>  
+            <if test="refreshType != null  and refreshType != ''"> and refresh_type = #{refreshType}</if>
+        </where>
+    </select>
+    
+    <select id="selectRefreshInfoById" parameterType="Long" resultMap="RefreshInfoResult">
+        <include refid="selectRefreshInfoVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertRefreshInfo" parameterType="RefreshInfo" useGeneratedKeys="true" keyProperty="id">
+        insert into refresh_info
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="refreshType != null">refresh_type,</if>
+            <if test="refreshStatus != null">refresh_status,</if>
+            <if test="refreshTik != null">refresh_tik,</if>
+            <if test="refreshPython != null">refresh_python,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="refreshType != null">#{refreshType},</if>
+            <if test="refreshStatus != null">#{refreshStatus},</if>
+            <if test="refreshTik != null">#{refreshTik},</if>
+            <if test="refreshPython != null">#{refreshPython},</if>
+         </trim>
+    </insert>
+
+    <update id="updateRefreshInfo" parameterType="RefreshInfo">
+        update refresh_info
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="refreshType != null">refresh_type = #{refreshType},</if>
+            <if test="refreshStatus != null">refresh_status = #{refreshStatus},</if>
+            <if test="refreshTik != null">refresh_tik = #{refreshTik},</if>
+            <if test="refreshPython != null">refresh_python = #{refreshPython},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteRefreshInfoById" parameterType="Long">
+        delete from refresh_info where id = #{id}
+    </delete>
+
+    <delete id="deleteRefreshInfoByIds" parameterType="String">
+        delete from refresh_info where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

@@ -1,5 +1,11 @@
 package com.ruoyi.framework.config;
 
+import com.ruoyi.common.core.redis.RedisCache;
+import com.ruoyi.common.utils.StringUtils;
+import com.ruoyi.framework.config.properties.PermitAllUrlProperties;
+import com.ruoyi.framework.security.filter.JwtAuthenticationTokenFilter;
+import com.ruoyi.framework.security.handle.AuthenticationEntryPointImpl;
+import com.ruoyi.framework.security.handle.LogoutSuccessHandlerImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,10 +22,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.filter.CorsFilter;
-import com.ruoyi.framework.config.properties.PermitAllUrlProperties;
-import com.ruoyi.framework.security.filter.JwtAuthenticationTokenFilter;
-import com.ruoyi.framework.security.handle.AuthenticationEntryPointImpl;
-import com.ruoyi.framework.security.handle.LogoutSuccessHandlerImpl;
+import org.springframework.web.filter.OncePerRequestFilter;
+
+import javax.servlet.FilterChain;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 
 /**
  * spring security配置
@@ -67,6 +76,12 @@ public class SecurityConfig
     private PermitAllUrlProperties permitAllUrl;
 
     /**
+     * redis缓存
+     */
+    @Autowired
+    private RedisCache redisCache;
+
+    /**
      * 身份验证实现
      */
     @Bean
@@ -93,6 +108,41 @@ public class SecurityConfig
      * rememberMe          |   允许通过remember-me登录的用户访问
      * authenticated       |   用户登录后可访问
      */
+    /**
+     * 自定义过滤器，用于处理/web前缀的请求
+     */
+    public class WebPrefixFilter extends OncePerRequestFilter {
+        @Override
+        protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+                throws ServletException, IOException {
+            // 自定义过滤逻辑
+            if (request.getRequestURI().startsWith("/web/*")) {
+                System.out.println("自定义过滤逻辑.....");
+                String acc = request.getHeader("acc");
+                String token = request.getHeader("token");
+                // 特殊处理逻辑
+                if (StringUtils.isNotNull(acc)) {
+                    String Token = redisCache.getCacheObject(acc);
+                    if (StringUtils.isNotNull(Token) && token.equals(Token)) {
+                        filterChain.doFilter(request, response);
+                        return;
+                    } else {
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("application/json");
+                        response.getWriter().write("{\"message\": \"Token令牌已过期\"}");
+                        return;
+                    }
+                } else {
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.getWriter().write("{\"message\": \"缺少必要的头信息\"}");
+                    return;
+                }
+            }
+            filterChain.doFilter(request, response);
+        }
+    }
+
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception
     {
@@ -111,7 +161,7 @@ public class SecurityConfig
             .authorizeHttpRequests((requests) -> {
                 permitAllUrl.getUrls().forEach(url -> requests.antMatchers(url).permitAll());
                 // 对于登录login 注册register 验证码captchaImage 允许匿名访问
-                requests.antMatchers("/login", "/register", "/captchaImage").permitAll()
+                requests.antMatchers("/login", "/register", "/captchaImage", "/personLogin", "/personRegister", "/web/*").permitAll()
                     // 静态资源，可匿名访问
                     .antMatchers(HttpMethod.GET, "/", "/*.html", "/**/*.html", "/**/*.css", "/**/*.js", "/profile/**").permitAll()
                     .antMatchers("/swagger-ui.html", "/swagger-resources/**", "/webjars/**", "/*/api-docs", "/druid/**").permitAll()
@@ -125,6 +175,8 @@ public class SecurityConfig
             // 添加CORS filter
             .addFilterBefore(corsFilter, JwtAuthenticationTokenFilter.class)
             .addFilterBefore(corsFilter, LogoutFilter.class)
+            // 对于/web前缀的请求，使用自定义过滤器
+            .addFilterBefore(new WebPrefixFilter(), JwtAuthenticationTokenFilter.class)
             .build();
     }
 

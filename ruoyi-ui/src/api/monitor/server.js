@@ -7,3 +7,14 @@ export function getServer() {
     method: 'get'
   })
 }
+
+
+// 文件上传
+export function uploadPic(data) {
+  return request({
+    url: '/system/user/profile/imgUpload',
+    method: 'post',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    data: data
+  })
+}

@@ -64,15 +64,15 @@ export const constantRoutes = [
   {
     path: '',
     component: Layout,
-    redirect: 'index',
-    children: [
+    redirect: 'video',
+    /*children: [
       {
         path: 'index',
         component: () => import('@/views/index'),
         name: 'Index',
-        meta: { title: '首页', icon: 'dashboard', affix: true }
+        meta: { title: '欢饮页', icon: 'dashboard', affix: true }
       }
-    ]
+    ]*/
   },
   {
     path: '/user',

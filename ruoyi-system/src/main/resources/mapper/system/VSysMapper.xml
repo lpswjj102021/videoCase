@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.VSysMapper">
+    
+    <resultMap type="VSys" id="VSysResult">
+        <result property="sysId"    column="sys_id"    />
+        <result property="sysName"    column="sys_name"    />
+        <result property="sysType"    column="sys_type"    />
+        <result property="sysIcp"    column="sys_icp"    />
+        <result property="sysPolice"    column="sys_police"    />
+        <result property="sysLogo"    column="sys_logo"    />
+        <result property="remarks"    column="remarks"    />
+    </resultMap>
+
+    <sql id="selectVSysVo">
+        select sys_id, sys_name, sys_type, sys_icp, sys_police, sys_logo, remarks from v_sys
+    </sql>
+
+    <select id="selectVSysList" parameterType="VSys" resultMap="VSysResult">
+        <include refid="selectVSysVo"/>
+        <where>  
+            <if test="sysName != null  and sysName != ''"> and sys_name like concat('%', #{sysName}, '%')</if>
+            <if test="sysType != null  and sysType != ''"> and sys_type = #{sysType}</if>
+            <if test="sysIcp != null  and sysIcp != ''"> and sys_icp like concat('%', #{sysIcp}, '%')</if>
+            <if test="sysPolice != null  and sysPolice != ''"> and sys_police like concat('%', #{sysPolice}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectVSysBySysId" parameterType="Long" resultMap="VSysResult">
+        <include refid="selectVSysVo"/>
+        where sys_id = #{sysId}
+    </select>
+
+    <insert id="insertVSys" parameterType="VSys" useGeneratedKeys="true" keyProperty="sysId">
+        insert into v_sys
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sysName != null">sys_name,</if>
+            <if test="sysType != null">sys_type,</if>
+            <if test="sysIcp != null">sys_icp,</if>
+            <if test="sysPolice != null">sys_police,</if>
+            <if test="sysLogo != null">sys_logo,</if>
+            <if test="remarks != null">remarks,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sysName != null">#{sysName},</if>
+            <if test="sysType != null">#{sysType},</if>
+            <if test="sysIcp != null">#{sysIcp},</if>
+            <if test="sysPolice != null">#{sysPolice},</if>
+            <if test="sysLogo != null">#{sysLogo},</if>
+            <if test="remarks != null">#{remarks},</if>
+         </trim>
+    </insert>
+
+    <update id="updateVSys" parameterType="VSys">
+        update v_sys
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sysName != null">sys_name = #{sysName},</if>
+            <if test="sysType != null">sys_type = #{sysType},</if>
+            <if test="sysIcp != null">sys_icp = #{sysIcp},</if>
+            <if test="sysPolice != null">sys_police = #{sysPolice},</if>
+            <if test="sysLogo != null">sys_logo = #{sysLogo},</if>
+            <if test="remarks != null">remarks = #{remarks},</if>
+        </trim>
+        where sys_id = #{sysId}
+    </update>
+
+    <delete id="deleteVSysBySysId" parameterType="Long">
+        delete from v_sys where sys_id = #{sysId}
+    </delete>
+
+    <delete id="deleteVSysBySysIds" parameterType="String">
+        delete from v_sys where sys_id in 
+        <foreach item="sysId" collection="array" open="(" separator="," close=")">
+            #{sysId}
+        </foreach>
+    </delete>
+</mapper>

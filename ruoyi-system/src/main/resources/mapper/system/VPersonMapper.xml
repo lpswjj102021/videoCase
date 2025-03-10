@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.VPersonMapper">
+    
+    <resultMap type="VPerson" id="VPersonResult">
+        <result property="personId"    column="person_id"    />
+        <result property="acc"    column="acc"    />
+        <result property="pwd"    column="pwd"    />
+        <result property="nickName"    column="nick_name"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="phone"    column="phone"    />
+        <result property="avatar"    column="avatar"    />
+        <result property="sex"    column="sex"    />
+        <result property="borthDay"    column="borth_day"    />
+    </resultMap>
+
+    <sql id="selectVPersonVo">
+        select person_id, acc, pwd, nick_name, create_time, phone, avatar, sex, borth_day from v_person
+    </sql>
+
+    <select id="selectVPersonList" parameterType="VPerson" resultMap="VPersonResult">
+        <include refid="selectVPersonVo"/>
+        <where>  
+            <if test="acc != null  and acc != ''"> and acc = #{acc}</if>
+            <if test="nickName != null  and nickName != ''"> and nick_name like concat('%', #{nickName}, '%')</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="sex != null  and sex != ''"> and sex = #{sex}</if>
+            <if test="borthDay != null "> and borth_day = #{borthDay}</if>
+        </where>
+    </select>
+    
+    <select id="selectVPersonByPersonId" parameterType="Long" resultMap="VPersonResult">
+        <include refid="selectVPersonVo"/>
+        where person_id = #{personId}
+    </select>
+
+    <select id="personLogin" parameterType="VPerson" resultMap="VPersonResult">
+        <include refid="selectVPersonVo"/>
+        where acc = #{acc} and pwd = #{pwd}
+    </select>
+
+    <insert id="insertVPerson" parameterType="VPerson" useGeneratedKeys="true" keyProperty="personId">
+        insert into v_person
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="acc != null">acc,</if>
+            <if test="pwd != null">pwd,</if>
+            <if test="nickName != null">nick_name,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="phone != null">phone,</if>
+            <if test="avatar != null">avatar,</if>
+            <if test="sex != null">sex,</if>
+            <if test="borthDay != null">borth_day,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="acc != null">#{acc},</if>
+            <if test="pwd != null">#{pwd},</if>
+            <if test="nickName != null">#{nickName},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="phone != null">#{phone},</if>
+            <if test="avatar != null">#{avatar},</if>
+            <if test="sex != null">#{sex},</if>
+            <if test="borthDay != null">#{borthDay},</if>
+         </trim>
+    </insert>
+
+    <update id="updateVPerson" parameterType="VPerson">
+        update v_person
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="acc != null">acc = #{acc},</if>
+            <if test="pwd != null">pwd = #{pwd},</if>
+            <if test="nickName != null">nick_name = #{nickName},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="avatar != null">avatar = #{avatar},</if>
+            <if test="sex != null">sex = #{sex},</if>
+            <if test="borthDay != null">borth_day = #{borthDay},</if>
+        </trim>
+        where person_id = #{personId}
+    </update>
+
+    <delete id="deleteVPersonByPersonId" parameterType="Long">
+        delete from v_person where person_id = #{personId}
+    </delete>
+
+    <delete id="deleteVPersonByPersonIds" parameterType="String">
+        delete from v_person where person_id in 
+        <foreach item="personId" collection="array" open="(" separator="," close=")">
+            #{personId}
+        </foreach>
+    </delete>
+</mapper>

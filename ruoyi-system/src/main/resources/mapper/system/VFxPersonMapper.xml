@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.VFxPersonMapper">
+    
+    <resultMap type="VFxPerson" id="VFxPersonResult">
+        <result property="vFxId"    column="v_fx_id"    />
+        <result property="vFxPid"    column="v_fx_pid"    />
+        <result property="vFxFid"    column="v_fx_fid"    />
+        <result property="vFxFname"    column="v_fx_fName"    />
+        <result property="vFxTeam"    column="v_fx_team"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="vFxFartherId"    column="v_fx_farther_id"    />
+        <result property="vFxFartherName"    column="v_fx_farther_name"    />
+    </resultMap>
+
+    <sql id="selectVFxPersonVo">
+        select v_fx_id, v_fx_pid, v_fx_fid, v_fx_fName, v_fx_team,v_fx_farther_id, v_fx_farther_name, create_time from v_fx_person
+    </sql>
+
+    <select id="selectVFxPersonList" parameterType="VFxPerson" resultMap="VFxPersonResult">
+        <include refid="selectVFxPersonVo"/>
+        <where>  
+            <if test="vFxPid != null "> and v_fx_pid = #{vFxPid}</if>
+            <if test="vFxFid != null "> and v_fx_fid = #{vFxFid}</if>
+            <if test="vFxTeam != null  and vFxTeam != ''"> and v_fx_team = #{vFxTeam}</if>
+        </where>
+    </select>
+    
+    <select id="selectVFxPersonByVFxId" parameterType="Long" resultMap="VFxPersonResult">
+        <include refid="selectVFxPersonVo"/>
+        where v_fx_id = #{vFxId}
+    </select>
+
+    <select id="selectVFxPersonBySql" parameterType="String" resultMap="VFxPersonResult">
+        <include refid="selectVFxPersonVo"/>
+        <where>${sql}</where>
+    </select>
+
+    <insert id="insertVFxPerson" parameterType="VFxPerson" useGeneratedKeys="true" keyProperty="vFxId">
+        insert into v_fx_person
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="vFxPid != null">v_fx_pid,</if>
+            <if test="vFxFid != null">v_fx_fid,</if>
+            <if test="vFxFname != null">v_fx_fName,</if>
+            <if test="vFxTeam != null">v_fx_team,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="vFxFartherId != null">v_fx_farther_id,</if>
+            <if test="vFxFartherName != null">v_fx_farther_name,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="vFxPid != null">#{vFxPid},</if>
+            <if test="vFxFid != null">#{vFxFid},</if>
+            <if test="vFxFname != null">#{vFxFname},</if>
+            <if test="vFxTeam != null">#{vFxTeam},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="vFxFartherId != null">#{vFxFartherId},</if>
+            <if test="vFxFartherName != null">#{vFxFartherName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateVFxPerson" parameterType="VFxPerson">
+        update v_fx_person
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="vFxPid != null">v_fx_pid = #{vFxPid},</if>
+            <if test="vFxFid != null">v_fx_fid = #{vFxFid},</if>
+            <if test="vFxFname != null">v_fx_fName = #{vFxFname},</if>
+            <if test="vFxTeam != null">v_fx_team = #{vFxTeam},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="vFxFartherId != null">v_fx_farther_id = #{vFxFartherId},</if>
+            <if test="vFxFartherName != null">v_fx_farther_name = #{vFxFartherName},</if>
+        </trim>
+        where v_fx_id = #{vFxId}
+    </update>
+
+    <delete id="deleteVFxPersonByVFxId" parameterType="Long">
+        delete from v_fx_person where v_fx_id = #{vFxId}
+    </delete>
+
+    <delete id="deleteVFxPersonByVFxIds" parameterType="String">
+        delete from v_fx_person where v_fx_id in 
+        <foreach item="vFxId" collection="array" open="(" separator="," close=")">
+            #{vFxId}
+        </foreach>
+    </delete>
+</mapper>
