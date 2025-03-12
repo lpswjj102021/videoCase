@@ -149,7 +149,6 @@
                 :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload">
                 <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                <img v-else-if="form.avatar" :src="form.avatar" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </el-form-item>
@@ -316,7 +315,7 @@ export default {
       const personId = row.personId || this.ids
       getPerson(personId).then(response => {
         this.form = response.data;
-        this.form.avatar = this.form.avatar ? process.env.VUE_APP_BASE_API + this.form.avatar : null;
+        this.imageUrl = this.form.avatar ? process.env.VUE_APP_BASE_API + this.form.avatar : null;
         this.open = true;
         this.title = "修改用户表";
       });

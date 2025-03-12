@@ -116,7 +116,7 @@
 
     <!-- 添加或修改分销商信息对话框 -->
     <el-dialog :title="title" :visible.sync="open" width="700px" append-to-body>
-      <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+      <el-form ref="form" :model="form" :rules="rules" label-width="100px">
         <el-row>
           <el-col :span="14">
             <el-form-item label="分销商" prop="vFxPid">
@@ -140,8 +140,8 @@
             </el-form-item>
           </el-col>
           <el-col :span="24">
-            <el-form-item label="团队成员" prop="vFxTeam">
-              <el-input v-model="form.vFxTeam" type="textarea" placeholder="请输入内容" />
+            <el-form-item label="团队成员ID集" prop="vFxTeam">
+              <span>[ {{ form.vFxTeam }} ]</span>
             </el-form-item>
           </el-col>
         </el-row>

@@ -128,13 +128,13 @@
     <el-dialog :title="title" :visible.sync="open" width="500px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
         <el-form-item label="用户" prop="vipTypeId">
-          <el-select v-model="form.personId">
+          <el-select v-model="form.personId" :disabled="title === '修改会员表'">
             <el-option v-for="item in personList" :key="item.personId" :label="item.nickName" :value="item.personId">
             </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="会员类别" prop="vipTypeId">
-          <el-select v-model="form.vipTypeId">
+          <el-select v-model="form.vipTypeId" @change="checkVip" :disabled="title === '修改会员表'">
             <el-option v-for="item in typeList" :key="item.vipTypeId" :label="item.vipType" :value="item.vipTypeId">
             </el-option>
           </el-select>
@@ -142,6 +142,7 @@
         <el-form-item label="到期时间" prop="endTime">
           <el-date-picker clearable
             v-model="form.endTime"
+            disabled
             type="date"
             value-format="yyyy-MM-dd"
             placeholder="请选择到期时间">
@@ -149,7 +150,8 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="submitForm">确 定</el-button>
+        <el-button type="success" v-if="title === '修改会员表'" @click="renewalVip">续约会员</el-button>
+        <el-button type="primary" v-else @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
       </div>
     </el-dialog>
@@ -160,7 +162,7 @@
 import { listVip, getVip, delVip, addVip, updateVip } from "@/api/por/vip";
 import {listPerson} from "../../../api/system/person";
 import {listType} from "../../../api/system/vType";
-import {getDateDiff} from "../../../utils/tools";
+import {getDateDiff, getExpireDate} from "../../../utils/tools";
 
 export default {
   name: "Vip",
@@ -194,6 +196,7 @@ export default {
       },
       // 表单参数
       form: {},
+      num: 1,
       // 表单校验
       rules: {},
       personList: [],
@@ -226,6 +229,15 @@ export default {
         this.total = response.total;
         this.loading = false;
       });
+    },
+    // 会员信息选择
+    checkVip(e){
+      this.form.endTime = getExpireDate(this.form.endTime, e)
+    },
+    // 续约会员
+    renewalVip(){
+      this.form.endTime = getExpireDate(this.form.endTime, this.form.vipTypeId)
+      this.submitForm()
     },
     // 取消按钮
     cancel() {

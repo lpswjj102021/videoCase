@@ -204,7 +204,6 @@
                 :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload">
                 <img v-if="imageUrl" :src="imageUrl" class="avatar">
-                <img v-else-if="form.vodImg" :src="form.vodImg" class="avatar">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </el-form-item>
@@ -387,7 +386,6 @@ export default {
       this.multiple = !selection.length
     },
     handleAvatarSuccess(res, file) {
-      console.log(res)
       this.imageUrl = URL.createObjectURL(file.raw);
       this.form.vodImg = res.imgUrl
     },
@@ -418,7 +416,7 @@ export default {
       const vodId = row.vodId || this.ids
       getVideo(vodId).then(response => {
         this.form = response.data;
-        this.form.vodImg = this.form.vodImg ? process.env.VUE_APP_BASE_API + this.form.vodImg : null;
+        this.imageUrl = this.form.vodImg ? process.env.VUE_APP_BASE_API + this.form.vodImg : null;
         this.open = true;
         this.title = "修改视频信息";
       });
