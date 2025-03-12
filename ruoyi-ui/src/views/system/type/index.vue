@@ -67,16 +67,28 @@
       <right-toolbar :showSearch.sync="showSearch" @queryTable="getList"></right-toolbar>-->
     </el-row>
 
-    <el-table v-loading="loading" :data="typeList" @selection-change="handleSelectionChange">
+    <el-table
+      v-loading="loading"
+      :data="typeList"
+      row-key="typeId"
+      @selection-change="handleSelectionChange"
+    >
       <el-table-column label="视频类别" prop="typeName" />
       <el-table-column label="状态" align="center" width="180" prop="status">
         <template slot-scope="scope">
           <el-switch v-model="scope.row.status" :active-value="1" :inactive-value="0" />
         </template>
       </el-table-column>
-      <el-table-column label="父级" align="center" width="180" prop="typePid" />
       <el-table-column label="操作" width="200" class-name="small-padding fixed-width">
         <template slot-scope="scope">
+          <el-button
+            v-if="scope.row.typePid === 0"
+            size="mini"
+            type="text"
+            icon="el-icon-plus"
+            @click="handleAddChild(scope.row)"
+            v-hasPermi="['system:type:edit']"
+          >添加字类</el-button>
           <el-button
             size="mini"
             type="text"
@@ -109,8 +121,8 @@
         <el-form-item label="视频类别" prop="typeName">
           <el-input v-model="form.typeName" placeholder="请输入视频类别" />
         </el-form-item>
-        <el-form-item label="父级类别" prop="typePid">
-          <el-select v-model="form.typePid" placeholder="请选择父级类别" clearable>
+        <el-form-item label="父级类别" prop="typePid" v-if="form.typePid !== 0">
+          <el-select disabled v-model="form.typePid" placeholder="请选择父级类别" clearable>
             <el-option v-for="dict in typeList" :key="dict.typeId" :label="dict.typeName" :value="dict.typeId" />
           </el-select>
         </el-form-item>
@@ -125,6 +137,7 @@
 
 <script>
 import { listType, getType, delType, addType, updateType } from "@/api/system/type";
+import {TreeType} from "../../../utils/childerTree";
 
 export default {
   name: "Type",
@@ -152,7 +165,7 @@ export default {
       // 查询参数
       queryParams: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 50,
         typeName: null,
         status: null,
         typePid: null
@@ -172,7 +185,8 @@ export default {
     getList() {
       this.loading = true;
       listType(this.queryParams).then(response => {
-        this.typeList = response.rows;
+        this.typeList = TreeType(response.rows);
+        console.log(this.typeList)
         this.total = response.total;
         this.loading = false;
       });
@@ -211,8 +225,16 @@ export default {
     /** 新增按钮操作 */
     handleAdd() {
       this.reset();
+      this.form.typePid = 0
       this.open = true;
       this.title = "添加视频类别";
+    },
+    /** 新增子集按钮操作 */
+    handleAddChild(e) {
+      this.reset();
+      this.form.typePid = e.typeId
+      this.open = true;
+      this.title = "添加视频字类类别";
     },
     /** 修改按钮操作 */
     handleUpdate(row) {

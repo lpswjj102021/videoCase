@@ -10,10 +10,7 @@
         />
       </el-form-item>
       <el-form-item label="类别" prop="typeId">
-        <el-select v-model="queryParams.typeId" placeholder="请选择类别" clearable>
-          <el-option
-            v-for="dict in typeList" :key="dict.typeId" :label="dict.typeName" :value="dict.typeId"/>
-        </el-select>
+        <el-cascader v-model="queryParams.typeId" :options="typeList" :show-all-levels="false" clearable @change="handleTypeChange"/>
       </el-form-item>
       <el-form-item label="视频上传日期" prop="vodCreateTime">
         <el-date-picker clearable
@@ -175,9 +172,7 @@
         <el-row>
           <el-col :span="12">
             <el-form-item label="类别" prop="typeId">
-              <el-select v-model="form.typeId" placeholder="请选择类别" @change="typeChange">
-                <el-option v-for="dict in typeList" :key="dict.typeId" :label="dict.typeName" :value="dict.typeId" />
-              </el-select>
+              <el-cascader v-model="selTypeArs" :options="typeList" :show-all-levels="false" style="width: 100%;" @change="typeChange" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
@@ -203,7 +198,7 @@
                 :show-file-list="false"
                 :on-success="handleAvatarSuccess"
                 :before-upload="beforeAvatarUpload">
-                <img v-if="imageUrl" :src="imageUrl" class="avatar">
+                <img v-if="imageUrl" :src="imageUrl" class="avatar" alt="">
                 <i v-else class="el-icon-plus avatar-uploader-icon"></i>
               </el-upload>
             </el-form-item>
@@ -269,6 +264,7 @@ import { listVideo, getVideo, delVideo, addVideo, updateVideo } from "@/api/syst
 import {listType} from "../../../api/system/type";
 import {uploadPic} from "../../../api/monitor/server";
 import {getToken} from "../../../utils/auth";
+import {GetTreeFar, TreeTypeSelect} from "../../../utils/childerTree";
 
 export default {
   name: "Video",
@@ -310,11 +306,12 @@ export default {
       },
       // 视频类别表格数据
       typeList: [],
+      typeArs: [],
       // 表单参数
       form: {},
+      selTypeArs:[],
       // 表单校验
-      rules: {
-      }
+      rules: {}
     };
   },
   created() {
@@ -325,7 +322,8 @@ export default {
     getListType() {
       this.loading = true;
       listType({pageNum: 1,pageSize: 99999}).then(response => {
-        this.typeList = response.rows;
+        this.typeArs = response.rows;
+        this.typeList = TreeTypeSelect(JSON.stringify(this.typeArs));
       });
     },
     /** 查询视频信息列表 */
@@ -348,6 +346,7 @@ export default {
     // 表单重置
     reset() {
       this.imageUrl = '';
+      this.selTypeArs = [];
       this.form = {
         vodId: null,
         vodName: null,
@@ -367,7 +366,11 @@ export default {
       this.resetForm("form");
     },
     typeChange(e){
-      this.form.typeName = this.typeList.filter(item => item.typeId === e)[0].typeName;
+      this.form.typeId = e[e.length - 1];
+      this.form.typeName = this.typeArs.filter(item => item.typeId === e[e.length - 1])[0].typeName;
+    },
+    handleTypeChange(e){
+      this.queryParams.typeId = e[e.length -1]
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -396,7 +399,6 @@ export default {
         this.$message.error('上传头像图片大小不能超过 2MB!');
         return isJPG && isLt2M;
       }
-      // this.uploadImg(file)
     },
     // 上传图片
     async uploadImg(file) {
@@ -414,6 +416,7 @@ export default {
     handleUpdate(row) {
       this.reset();
       const vodId = row.vodId || this.ids
+      this.selTypeArs = GetTreeFar(this.typeArs, row.typeId);
       getVideo(vodId).then(response => {
         this.form = response.data;
         this.imageUrl = this.form.vodImg ? process.env.VUE_APP_BASE_API + this.form.vodImg : null;
