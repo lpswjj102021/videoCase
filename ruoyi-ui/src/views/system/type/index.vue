@@ -1,16 +1,8 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch">
-      <el-form-item label="视频类别" prop="typeName">
-        <el-input
-          v-model="queryParams.typeName"
-          placeholder="请输入视频类别"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
-      <el-form-item label="父级" prop="typePid">
-        <el-select v-model="queryParams.typePid" placeholder="请选择父级" clearable>
+      <el-form-item label="主类别" prop="typePid">
+        <el-select v-model="queryParams.typeId" placeholder="请选择主类别" clearable>
           <el-option
             v-for="dict in typeList" :key="dict.typeId" :label="dict.typeName" :value="dict.typeId" />
         </el-select>
@@ -168,7 +160,8 @@ export default {
         pageSize: 50,
         typeName: null,
         status: null,
-        typePid: null
+        typePid: null,
+        typeId: null
       },
       // 表单参数
       form: {},
@@ -186,7 +179,6 @@ export default {
       this.loading = true;
       listType(this.queryParams).then(response => {
         this.typeList = TreeType(response.rows);
-        console.log(this.typeList)
         this.total = response.total;
         this.loading = false;
       });
@@ -214,6 +206,7 @@ export default {
     /** 重置按钮操作 */
     resetQuery() {
       this.resetForm("queryForm");
+      this.queryParams.typeId = null
       this.handleQuery();
     },
     // 多选框选中数据

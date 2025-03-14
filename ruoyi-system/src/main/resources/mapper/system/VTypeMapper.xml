@@ -21,6 +21,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="typeName != null  and typeName != ''"> and type_name like concat('%', #{typeName}, '%')</if>
             <if test="status != null "> and status = #{status}</if>
             <if test="typePid != null "> and type_pid = #{typePid}</if>
+            <if test="typeId != null "> and type_id = #{typeId} or type_pid = #{typeId}</if>
         </where>
     </select>
     
